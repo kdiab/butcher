@@ -1,13 +1,12 @@
 s.boot;
 
-
 (
 ~buffer = Buffer.read(s, "path");
 )
 
 (
 SynthDef(\drumDetectorFile, {
-    arg bufnum, threshold = 0.4, rate = 1.0, startPos = 0;
+    arg bufnum, threshold = 0.2, rate = 1.0, startPos = 0;
 
     var input, kickBand, snareBand, hihatBand;
     var kickEnv, snareEnv, hihatEnv;
@@ -41,7 +40,7 @@ SynthDef(\drumDetectorFile, {
     fft = FFT(LocalBuf(1024), input);
     spectralCentroid = SpecCentroid.kr(fft).clip(20, 20000);
 
-	//trigger detection
+    // Trigger detection
     kickTrig = Trig1.ar(
         (kickEnv > (threshold * 2)) *
         (kickEnv > (snareEnv + 0.01)) *     // Kick should dominate over snare
@@ -60,7 +59,7 @@ SynthDef(\drumDetectorFile, {
         (hihatEnv > (threshold * 0.3)) *
         (hihatEnv > (kickEnv * 1.5)) *     // Hi-hat should be louder than kick
         (zeroCrossings > 0.1),             // High-frequency content indicator
-        0.06 //shroter holdoff
+        0.06  // Shorter holdoff for rapid hi-hat patterns
     );
 
     // Get current levels and features when triggered
